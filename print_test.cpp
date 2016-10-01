@@ -1,6 +1,6 @@
 #include "print.h"
-#include "fprint.h"
-#include "sprint.h"
+#include <fstream>
+#include <sstream>
 #include <iomanip>
 
 static bool error_found = false;
@@ -59,7 +59,7 @@ struct StrStream {
 };
 
 template <class ...Args>
-std::string sprint2(const char *fmt, const Args &...args)
+std::string sprint(const char *fmt, const Args &...args)
 {
   std::string str;
   StrStream ss(str);
@@ -72,8 +72,6 @@ std::string sprint2(const char *fmt, const Args &...args)
 int main()
 {
   using KameUtil::print;
-  using KameUtil::fprint;
-  using KameUtil::sprint;
   using std::ostream;
   using std::cout;
   using std::string;
@@ -94,8 +92,8 @@ int main()
   std::stringstream ss;
 
   logError(print(fmt, role, name, topic, gold));
-  logError(fprint(fout, fmt, role, name, topic, gold));
-  logError(sprint(ss, fmt, role, name, topic, gold));;;;
+  logError(print(fout, fmt, role, name, topic, gold));
+  logError(print(ss, fmt, role, name, topic, gold));
 
   string str = ss.str();
   ss.str("");
@@ -109,8 +107,8 @@ int main()
 
   // prints garbage on Windows console, but works with mintty
   logError(print(fmt2, role, name, topic, gold));
-  logError(fprint(fout, fmt2, role, name, topic, gold));
-  logError(sprint(ss, fmt2, role, name, topic, gold));
+  logError(print(fout, fmt2, role, name, topic, gold));
+  logError(print(ss, fmt2, role, name, topic, gold));
 
   str = ss.str();
   ss.str("");
@@ -121,35 +119,36 @@ int main()
   {
     std::wofstream wfout("wout.txt");
     std::wstringstream wss;
-    KameUtil::wprint(L"wprint test\n");
-    KameUtil::wfprint(wfout, L"wfprint test\n");
-    KameUtil::wsprint(wss, L"wsprint test\n");
+    KameUtil::print(L"wprint test\n");
+    KameUtil::print(wfout, L"wfprint test\n");
+    KameUtil::print(wss, L"wsprint test\n");
     std::wstring wstr = wss.str();
     std::wcout << wstr << std::endl;
     wfout << wstr << std::endl;
   }
 
   // Test custom stream class with valid index input
-  logError(sprint2("{}", 0, 1) == "0"); // too many args is fine
-  logError(sprint2("foo {1} {} {0}", "bar", 123, "baz") 
+  logError(sprint("{}", 0, 1) == "0"); // too many args is fine
+  logError(sprint("foo {1} {} {0}", "bar", 123, "baz") 
     == "foo 123 baz bar");
-  logError(sprint2("{10}", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 
+  logError(sprint("{10}", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 
     "foo", 11) == "foo");
-  logError(sprint2("{{}", 0, 1) == "{}"); // "{{" escapes '{'
+  logError(sprint("{{", 0, 1) == "{"); // "{{" escapes '{'
+  logError(sprint("{{}", 0, 1) == "{}"); // "{{" escapes '{'
 
   // Test invalid index input
-  logError(!sprint(ss, "{00}", 0, 1)); // no leading 0's
-  logError(!sprint(ss, "{01}", 0, 1)); // no leading 0's
-  logError(!sprint(ss, "{ }", 0, 1)); // no spaces allowed inside "{}"
-  logError(!sprint(ss, "{1 }", 0, 1)); // no spaces allowed inside "{}"
-  logError(!sprint(ss, "{0 0}", 0, 1)); // no spaces allowed inside "{}"
-  logError(!sprint(ss, "{0 1}", 0, 1)); // no spaces allowed inside "{}"
-  logError(!sprint(ss, "{1 0}", 0, 1)); // no spaces allowed inside "{}"
-  logError(!sprint(ss, "{-1}", 0, 1)); // no negative positions 
-  logError(!sprint(ss, "{a}", 0, 1)); // only digits inside "{}"
-  logError(!sprint(ss, "{1a}", 0, 1)); // only digits inside "{}"
-  logError(!sprint(ss, "{a1}", 0, 1)); // only digits inside "{}"
-  logError(!sprint(ss, "{2}", 0, 1)); // invalid position
+  logError(!print(ss, "{00}", 0, 1)); // no leading 0's
+  logError(!print(ss, "{01}", 0, 1)); // no leading 0's
+  logError(!print(ss, "{ }", 0, 1)); // no spaces allowed inside "{}"
+  logError(!print(ss, "{1 }", 0, 1)); // no spaces allowed inside "{}"
+  logError(!print(ss, "{0 0}", 0, 1)); // no spaces allowed inside "{}"
+  logError(!print(ss, "{0 1}", 0, 1)); // no spaces allowed inside "{}"
+  logError(!print(ss, "{1 0}", 0, 1)); // no spaces allowed inside "{}"
+  logError(!print(ss, "{-1}", 0, 1)); // no negative positions 
+  logError(!print(ss, "{a}", 0, 1)); // only digits inside "{}"
+  logError(!print(ss, "{1a}", 0, 1)); // only digits inside "{}"
+  logError(!print(ss, "{a1}", 0, 1)); // only digits inside "{}"
+  logError(!print(ss, "{2}", 0, 1)); // invalid position
 
   if (!error_found) {
     cout << "All tests passed\n";
