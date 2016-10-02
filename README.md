@@ -30,31 +30,23 @@ Functions:
 ```
 stream_print.h:
 template <class Ostream, class CharT, class ...Args>
-bool streamPrint(OStream &, const CharT *fmt, const Args &...args);
+bool streamPrint(OStream &os, const CharT *fmt, const Args &...args);
 
 print.h:
 template <class ...Args>
 bool print(const char *fmt, const Args &...args);
 
 template <class ...Args>
-bool wprint(const wchar_t *fmt, const Args &...args);
-
-fprint.h:
-template <class ...Args>
-bool fprint(std::ofstream &fout, const char *fmt, const Args &...args);
+bool print(const wchar_t *fmt, const Args &...args);
 
 template <class ...Args>
-bool wfprint(std::wofstream &fout, const wchar_t *fmt, const Args &...args);
-
-sprint.h:
-template <class ...Args>
-bool sprint(std::stringstream &ss, const char *fmt, const Args &...args);
+bool print(std::ostream &os, const char *fmt, const Args &...args);
 
 template <class ...Args>
-bool wsprint(std::wstringstream &ss, const wchar_t *fmt, const Args &...args);
+bool print(std::wostream &os, const wchar_t *fmt, const Args &...args);
 ```
-print uses std::cout and wprint used std::wcout.
+print without a passed std::ostream uses std::cout or std::wcout. 
 Custom stream classes with an overloaded operator<< can be used with streamPrint.
 
 ---
-See print_test.cpp for more examples.
+See print_test.cpp for more examples, and https://github.com/MattKD/cpp_print_tests for performance comparisons.
