@@ -4,6 +4,7 @@ C++11 template print functions with position arguments
 Basic usage:
 ```
 #include "print.h"
+using KameUtil::print;
 
 int main()
 {
