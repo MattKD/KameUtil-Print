@@ -1,4 +1,4 @@
-# KameUtil-Print
+# cpp-print
 C++11 template print functions with position arguments
 
 Basic usage:
